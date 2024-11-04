@@ -5,6 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { format } from 'date-fns';
 import { ChevronDown, ChevronRight, FolderOpen, Search } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 interface TilPost {
   slug: string;
@@ -21,7 +23,6 @@ interface TILProps {
 }
 
 const TIL: React.FC<TILProps> = ({ initialPosts }) => {
-  // Use state to handle client-side rendering
   const [mounted, setMounted] = useState(false);
   const [posts] = useState(initialPosts);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -29,21 +30,17 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Handle client-side mounting
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Don't render until mounted
   if (!mounted) {
     return null;
   }
 
-  // Get unique categories and tags
   const categories = ['all', ...new Set(posts.map(post => post.category))];
   const allTags = Array.from(new Set(posts.flatMap(post => post.tags)));
 
-  // Filter posts based on selected category, tag, and search query
   const filteredPosts = posts.filter(post => {
     const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
     const matchesTag = !selectedTag || post.tags.includes(selectedTag);
@@ -66,7 +63,6 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Today I Learned</h1>
           <p className="text-gray-600 mb-6">A collection of quick coding lessons and tips</p>
           
-          {/* Search bar */}
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -81,7 +77,6 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
             />
           </div>
 
-          {/* Category filter */}
           <div className="flex gap-2 flex-wrap mb-4">
             {categories.map((category) => (
               <button
@@ -100,7 +95,6 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
             ))}
           </div>
 
-          {/* Tag filter */}
           <div className="flex gap-2 flex-wrap mb-6">
             {allTags.map((tag) => (
               <button
@@ -160,7 +154,30 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                       ))}
                     </div>
                     <div className="mt-4">
-                      <ReactMarkdown>{post.content}</ReactMarkdown>
+                      <ReactMarkdown
+                        components={{
+                          code({node, inline, className, children, ...props}) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                style={oneDark}
+                                language={match[1]}
+                                PreTag="div"
+                                className="rounded-md"
+                                {...props}
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          }
+                        }}
+                      >
+                        {post.content}
+                      </ReactMarkdown>
                     </div>
                   </div>
                 ) : (
