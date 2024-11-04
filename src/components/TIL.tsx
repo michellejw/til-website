@@ -157,7 +157,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                     <div className="mt-4">
                     <ReactMarkdown
                       components={{
-                        code({node, className, children, ...props}) {
+                        code({className, children, ...props}) {
                           const match = /language-(\w+)/.exec(className || '');
                           const isInline = !match;
                           return isInline ? (

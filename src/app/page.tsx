@@ -2,8 +2,8 @@ import TIL from '@/components/TIL';
 import { headers } from 'next/headers';
 
 export default async function Page() {
-  // Get the host from headers
-  const headersList = headers();
+  // Get the host from headers - add await here
+  const headersList = await headers();
   const host = headersList.get('host') || 'localhost:3001';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
