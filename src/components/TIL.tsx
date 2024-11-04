@@ -1,21 +1,43 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { format } from 'date-fns';
 import { ChevronDown, ChevronRight, FolderOpen, Search } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import type { TilPost } from '@/lib/til';
 
-interface TILProps {
-  posts: TilPost[];
+interface TilPost {
+  slug: string;
+  category: string;
+  title: string;
+  summary: string;
+  tags: string[];
+  date: string;
+  content: string;
 }
 
-const TIL: React.FC<TILProps> = ({ posts }) => {
+interface TILProps {
+  initialPosts: TilPost[];
+}
+
+const TIL: React.FC<TILProps> = ({ initialPosts }) => {
+  // Use state to handle client-side rendering
+  const [mounted, setMounted] = useState(false);
+  const [posts] = useState(initialPosts);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render until mounted
+  if (!mounted) {
+    return null;
+  }
 
   // Get unique categories and tags
   const categories = ['all', ...new Set(posts.map(post => post.category))];
@@ -55,6 +77,7 @@ const TIL: React.FC<TILProps> = ({ posts }) => {
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              suppressHydrationWarning
             />
           </div>
 
@@ -111,14 +134,14 @@ const TIL: React.FC<TILProps> = ({ posts }) => {
                       : <ChevronRight className="w-4 h-4 text-gray-400" />
                     }
                   </div>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-400" suppressHydrationWarning>
                     {format(new Date(post.date), 'MMM d, yyyy')}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {expandedId === post.slug ? (
-                  <div className="prose prose-sm max-w-none">
+                  <div className="prose max-w-none">
                     <div className="mb-4 flex gap-2 flex-wrap">
                       {post.tags.map((tag) => (
                         <button

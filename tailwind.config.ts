@@ -55,7 +55,45 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		typography: {
+			DEFAULT: {
+				css: {
+					color: '#1a1a1a',
+					'code': {
+						fontSize: '1rem',
+						color: '#1a1a1a',
+					},
+					'pre code': {
+						fontSize: '0.95rem',
+						lineHeight: '1.5',
+						color: '#1a1a1a',
+					},
+					'pre': {
+						backgroundColor: '#f3f4f6',
+						padding: '1rem',
+						borderRadius: '0.375rem',
+						margin: '1rem 0',
+					},
+					// Making all headings darker too
+					'h1, h2, h3, h4, h5, h6': {
+						color: '#1a1a1a',
+					  },
+					// Making links a nice blue color
+					'a': {
+						color: '#2563eb',
+						'&:hover': {
+						color: '#1d4ed8',
+						},
+					},
+					// Ensuring paragraph text is dark
+					'p': {
+						color: '#1a1a1a',
+						}				
+				},
+				
+			}
+		}
   	}
   },
   plugins: [require("tailwindcss-animate"),

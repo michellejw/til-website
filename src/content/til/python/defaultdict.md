@@ -2,7 +2,7 @@
 title: "Python defaultdict"
 summary: "A cleaner way to handle dictionary initialization in Python"
 tags: ["python", "datastructures", "nlp"]
-date: "2024-03-15"
+date: "2024-11-04"
 category: "python"
 ---
 
