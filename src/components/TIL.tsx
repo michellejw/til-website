@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
+
 interface TilPost {
   slug: string;
   category: string;
@@ -154,30 +155,30 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                       ))}
                     </div>
                     <div className="mt-4">
-                      <ReactMarkdown
-                        components={{
-                          code({node, inline, className, children, ...props}) {
-                            const match = /language-(\w+)/.exec(className || '');
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                style={oneDark}
-                                language={match[1]}
-                                PreTag="div"
-                                className="rounded-md"
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          }
-                        }}
-                      >
-                        {post.content}
-                      </ReactMarkdown>
+                    <ReactMarkdown
+                      components={{
+                        code({node, className, children, ...props}) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          const isInline = !match;
+                          return isInline ? (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <SyntaxHighlighter
+                              style={oneDark}
+                              language={match[1]}
+                              PreTag="div"
+                              className="rounded-md"
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          );
+                        }
+                      }}
+                    >
+                      {post.content}
+                    </ReactMarkdown>
                     </div>
                   </div>
                 ) : (

@@ -37,6 +37,7 @@ export async function GET() {
 
     return NextResponse.json({ posts });
   } catch (error) {
+    console.error('Failed to fetch posts:', error); // Log the error
     return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
   }
 }
