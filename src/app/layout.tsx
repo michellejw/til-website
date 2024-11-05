@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Today I Learned",
   description: "Code snippets etc.",
   icons: {
-    icon: "/favicon.png",
+    icon: "/logo800.png",
   },
 };
 
