@@ -7,6 +7,7 @@ import { ChevronDown, ChevronRight, FolderOpen, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import rehypeRaw from "rehype-raw"; // Add this import
 
 interface TilPost {
   slug: string;
@@ -172,6 +173,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                     </div>
                     <div className="mt-4">
                       <ReactMarkdown
+                        rehypePlugins={[rehypeRaw]} // Add this line
                         components={{
                           code({ className, children, ...props }) {
                             const match = /language-(\w+)/.exec(
@@ -193,6 +195,10 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                               </SyntaxHighlighter>
                             );
                           },
+                          // Add an img handler
+                          img: ({ node, ...props }) => (
+                            <img {...props} className="max-w-md mx-auto" />
+                          ),
                         }}
                       >
                         {post.content}
