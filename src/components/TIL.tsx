@@ -176,7 +176,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                       <ReactMarkdown
                         rehypePlugins={[rehypeRaw]} // Add this line
                         components={{
-                          code({ className, children }) {
+                          code({ className, children, ...props }) {
                             const match = /language-(\w+)/.exec(
                               className || ""
                             );
@@ -197,7 +197,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                             );
                           },
                           // img handler
-                          img: ({ src, alt, ...props }) => {
+                          img: ({ src, alt }) => {
                             if (!src) return null;
 
                             // Parse size from alt text if it includes a size marker
