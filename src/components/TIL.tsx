@@ -176,7 +176,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                       <ReactMarkdown
                         rehypePlugins={[rehypeRaw]} // Add this line
                         components={{
-                          code({ className, children, ...props }) {
+                          code({ className, children }) {
                             const match = /language-(\w+)/.exec(
                               className || ""
                             );
