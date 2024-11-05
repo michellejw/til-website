@@ -2,7 +2,7 @@
 title: "Mermaid Flow Diagrams"
 summary: "Create flow diagrams using markdown"
 tags: ["markdown", "flow diagrams", "documentation"]
-date: "2024-11-04"
+date: "2024-11-05"
 category: "tools"
 ---
 
@@ -12,7 +12,7 @@ Flow diagrams are a super helpful part of documenting code processes and workflo
 
 Here's a simple example of a flow diagram showing a debugging process:
 
-![Debug Flow Diagram](/images/mermaid-demo.png)
+![Debug Flow Diagram|300](/images/mermaid-demo.png)
 
 <!-- <img src="/images/mermaid-demo.svg" alt="Debug Flow Diagram" className="w-96" /> -->
 

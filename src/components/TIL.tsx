@@ -7,7 +7,8 @@ import { ChevronDown, ChevronRight, FolderOpen, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import rehypeRaw from "rehype-raw"; // Add this import
+import rehypeRaw from "rehype-raw";
+import Image from "next/image";
 
 interface TilPost {
   slug: string;
@@ -145,7 +146,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                     className="text-sm text-gray-400"
                     suppressHydrationWarning
                   >
-                    {format(new Date(post.date), "MMM d, yyyy")}
+                    {format(new Date(post.date + "T12:00:00"), "MMM d, yyyy")}
                   </span>
                 </CardTitle>
               </CardHeader>
@@ -195,10 +196,30 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                               </SyntaxHighlighter>
                             );
                           },
-                          // Add an img handler
-                          img: ({ node, ...props }) => (
-                            <img {...props} className="max-w-md mx-auto" />
-                          ),
+                          // img handler
+                          img: ({ src, alt, ...props }) => {
+                            if (!src) return null;
+
+                            // Parse size from alt text if it includes a size marker
+                            const [altText, width] = (alt || "").split("|");
+
+                            // Convert width to number if it exists, or use default
+                            const imageWidth = width ? parseInt(width) : 400;
+                            // Calculate height proportionally (using 3:2 aspect ratio as example)
+                            const imageHeight = Math.round(
+                              imageWidth * (2 / 3)
+                            );
+
+                            return (
+                              <Image
+                                src={src.startsWith("/") ? src : `/${src}`}
+                                alt={altText || "Article image"}
+                                width={imageWidth}
+                                height={imageHeight}
+                                className="mx-auto rounded-lg"
+                              />
+                            );
+                          },
                         }}
                       >
                         {post.content}
