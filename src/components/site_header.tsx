@@ -2,12 +2,11 @@ import React from "react";
 import { Github, Globe } from "lucide-react";
 
 interface SiteHeaderProps {
-  logoUrl?: string;
+  // Empty for now, add props here as needed
+  className?: string; // Added as an example of a valid prop
 }
 
-const SiteHeader: React.FC<SiteHeaderProps> = ({
-  logoUrl = "/api/placeholder/40/40",
-}) => {
+const SiteHeader: React.FC<SiteHeaderProps> = () => {
   return (
     <header className="border-b bg-white">
       <div className="max-w-6xl mx-auto px-8 py-2">
@@ -19,7 +18,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/yourusername/til-app"
+              href="https://github.com/michellejw/til-website"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -43,7 +42,10 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({
   );
 };
 
-interface SiteFooterProps {}
+// Add a proper type for the footer props instead of an empty interface
+type SiteFooterProps = {
+  className?: string; // Added as an example of a valid prop
+};
 
 const SiteFooter: React.FC<SiteFooterProps> = () => {
   return (
@@ -51,8 +53,7 @@ const SiteFooter: React.FC<SiteFooterProps> = () => {
       <div className="max-w-6xl mx-auto px-8 py-4">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()} Michelle Weirathmueller. All rights
-            reserved.
+            © {new Date().getFullYear()} Michelle Weirathmueller.
           </p>
           <div className="flex items-center gap-4">
             <a
