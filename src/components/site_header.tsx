@@ -57,7 +57,7 @@ const SiteFooter: React.FC<SiteFooterProps> = () => {
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/yourusername"
+              href="https://github.com/michellejw/til-website"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors"
@@ -65,7 +65,7 @@ const SiteFooter: React.FC<SiteFooterProps> = () => {
               <Github className="w-4 h-4" />
             </a>
             <a
-              href="https://yourwebsite.com"
+              href="https://michw.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors"
