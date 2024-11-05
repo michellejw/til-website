@@ -22,7 +22,7 @@ export default async function Page() {
   // return <TIL initialPosts={posts} />;
   return (
     <>
-      <SiteHeader logoUrl="/waveformlogo-small-tight.png" />
+      <SiteHeader />
       <TIL initialPosts={posts} />
       <SiteFooter />
     </>
