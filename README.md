@@ -1,19 +1,8 @@
 # TIL Website
 
-A minimalist, searchable "Today I Learned" website built with Next.js and Tailwind CSS. This project provides a clean interface for organizing and sharing quick learning snippets, code examples, and technical notes.
+A minimal "Today I Learned" website built with Next.js and Tailwind CSS. This is mostly an experiment and a way for me to play around with javascript and react. But also a fun way to collect some of the things I learn along the way.
 
-![TIL Website Screenshot|400](/images/screenshot.png)
-
-## Features
-
-- 📝 Markdown-based content creation
-- 🏷️ Tag-based filtering
-- 📁 Category organization
-- 🔍 Full-text search
-- 💻 Syntax highlighting for code blocks
-- 📱 Responsive design
-- 🎨 Clean, minimal UI with Tailwind CSS
-- 📊 Support for Mermaid diagrams
+If you want to replicate this for your own TIL site, follow along with these instructions:
 
 ## Getting Started
 
@@ -28,7 +17,7 @@ A minimalist, searchable "Today I Learned" website built with Next.js and Tailwi
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/til-website.git
+git clone https://github.com/michellejw/til-website.git
 cd til-website
 ```
 
@@ -40,13 +29,7 @@ npm install
 yarn install
 ```
 
-3. Create a `.env.local` file in the root directory (optional):
-
-```env
-NEXT_PUBLIC_SITE_URL=your-site-url
-```
-
-4. Start the development server:
+3. Start the development server:
 
 ```bash
 npm run dev
@@ -54,7 +37,7 @@ npm run dev
 yarn dev
 ```
 
-The site should now be running at `http://localhost:3000`
+The site should run at `http://localhost:3000`
 
 ## Adding Content
 
