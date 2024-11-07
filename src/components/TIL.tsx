@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { ChevronRight, FolderOpen, Search } from "lucide-react";
+import { ChevronRight, FolderOpen, Search, ChevronLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -42,6 +42,30 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!expandedId) return;
+
+      const currentIndex = filteredPosts.findIndex(
+        (post) => post.slug === expandedId
+      );
+      if (currentIndex === -1) return;
+
+      if (e.key === "ArrowRight") {
+        const nextIndex =
+          currentIndex === filteredPosts.length - 1 ? 0 : currentIndex + 1;
+        setExpandedId(filteredPosts[nextIndex].slug);
+      } else if (e.key === "ArrowLeft") {
+        const prevIndex =
+          currentIndex === 0 ? filteredPosts.length - 1 : currentIndex - 1;
+        setExpandedId(filteredPosts[prevIndex].slug);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [expandedId, initialPosts, selectedCategory, selectedTag, searchQuery]);
+
   if (!mounted) return null;
 
   const categories = ["all", ...new Set(posts.map((post) => post.category))];
@@ -60,13 +84,30 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
     return matchesCategory && matchesTag && matchesSearch;
   });
 
+  const navigatePost = (direction: "next" | "prev") => {
+    const currentIndex = filteredPosts.findIndex(
+      (post) => post.slug === expandedId
+    );
+    if (currentIndex === -1) return;
+
+    let newIndex;
+    if (direction === "next") {
+      newIndex =
+        currentIndex === filteredPosts.length - 1 ? 0 : currentIndex + 1;
+    } else {
+      newIndex =
+        currentIndex === 0 ? filteredPosts.length - 1 : currentIndex - 1;
+    }
+    setExpandedId(filteredPosts[newIndex].slug);
+  };
+
   const TagButton: React.FC<{
     tag: string;
     onClick: (e: React.MouseEvent) => void;
   }> = ({ tag, onClick }) => (
     <button
       onClick={onClick}
-      className={`px-2 py-1 rounded-full text-sm transition-colors
+      className={`px-2 py-1 rounded-full text-sm transition-colors focus:outline-none
         ${
           selectedTag === tag
             ? "bg-green-600 text-white"
@@ -237,12 +278,27 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                 }}
               >
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-bold">
-                      {post.title}
-                    </DialogTitle>
-                    <div className="text-sm text-gray-500">
-                      {format(new Date(post.date + "T12:00:00"), "MMM d, yyyy")}
+                  <DialogHeader className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <ChevronLeft
+                        className="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        onClick={() => navigatePost("prev")}
+                      />
+                      <div>
+                        <DialogTitle className="text-xl font-bold">
+                          {post.title}
+                        </DialogTitle>
+                        <div className="text-sm text-gray-500">
+                          {format(
+                            new Date(post.date + "T12:00:00"),
+                            "MMM d, yyyy"
+                          )}
+                        </div>
+                      </div>
+                      <ChevronRight
+                        className="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        onClick={() => navigatePost("next")}
+                      />
                     </div>
                   </DialogHeader>
                   <PostContent post={post} />
