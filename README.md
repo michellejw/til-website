@@ -66,6 +66,7 @@ title: "Your TIL Title"
 summary: "A brief summary of what you learned"
 tags: ["tag1", "tag2"]
 date: "2024-11-05"
+category: "category-name"
 ---
 
 # Your Content Here

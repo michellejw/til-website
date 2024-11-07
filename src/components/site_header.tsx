@@ -1,9 +1,9 @@
 import React from "react";
 import { Github, Globe } from "lucide-react";
+import Link from "next/link";
 
 interface SiteHeaderProps {
-  // Empty for now, add props here as needed
-  className?: string; // Added as an example of a valid prop
+  className?: string;
 }
 
 const SiteHeader: React.FC<SiteHeaderProps> = () => {
@@ -11,11 +11,21 @@ const SiteHeader: React.FC<SiteHeaderProps> = () => {
     <header className="border-b bg-white">
       <div className="max-w-6xl mx-auto px-8 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="hover:opacity-80">
               <h1 className="text-lg font-bold text-gray-900">TIL</h1>
-            </div>
+            </Link>
+            {/* Internal navigation links */}
+            <nav className="flex items-center gap-4">
+              <Link
+                href="/about"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <span className="hidden sm:inline text-sm">About</span>
+              </Link>
+            </nav>
           </div>
+          {/* External links */}
           <div className="flex items-center gap-4">
             <a
               href="https://github.com/michellejw/til-website"
@@ -42,9 +52,9 @@ const SiteHeader: React.FC<SiteHeaderProps> = () => {
   );
 };
 
-// Add a proper type for the footer props instead of an empty interface
+// Footer component remains the same
 type SiteFooterProps = {
-  className?: string; // Added as an example of a valid prop
+  className?: string;
 };
 
 const SiteFooter: React.FC<SiteFooterProps> = () => {
