@@ -1,6 +1,6 @@
 # TIL Website
 
-![TIL-site](public/images/til-site.png)
+<img src="public/images/til-site.png" alt="TIL-site" style="border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
 
 A minimal "Today I Learned" website built with Next.js and Tailwind CSS. This is mostly an experiment and a way for me to play around with javascript and react. But also a fun way to collect some of the things I learn along the way.
 
