@@ -1,5 +1,7 @@
 # TIL Website
 
+![TIL-site](public/images/til-site.png)
+
 A minimal "Today I Learned" website built with Next.js and Tailwind CSS. This is mostly an experiment and a way for me to play around with javascript and react. But also a fun way to collect some of the things I learn along the way.
 
 If you want to replicate this for your own TIL site, follow along with these instructions:
