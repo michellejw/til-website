@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ChevronRight, FolderOpen, Search } from "lucide-react";
@@ -114,7 +113,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                 </SyntaxHighlighter>
               );
             },
-            img: ({ src, alt, ...props }) => {
+            img: ({ src, alt }) => {
               if (!src) return null;
               const [altText, width] = (alt || "").split("|");
               const imageWidth = width ? parseInt(width) : 400;
