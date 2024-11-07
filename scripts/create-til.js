@@ -11,7 +11,7 @@ import chalk from "chalk";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Helper functions remain the same
+// Helper functions
 function getExistingCategories() {
   const tilPath = path.join(process.cwd(), "src", "content", "til");
   try {
@@ -53,17 +53,21 @@ async function getExistingTags() {
   return Array.from(tagSet);
 }
 
-async function createTil(title) {
+async function createTil(initialTitle) {
   try {
-    const existingCategories = getExistingCategories();
-    const availableTags = await getExistingTags(); // Changed variable name here
+    // Create initial slug from title
+    const slug = initialTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
-    const questions = [
-      {
-        type: "input",
-        name: "summary",
-        message: "Enter a brief summary (or press Enter to skip):",
-      },
+    const filename = `${slug}.md`;
+
+    const existingCategories = getExistingCategories();
+    const availableTags = await getExistingTags();
+
+    // Get category first
+    const categoryAnswer = await inquirer.prompt([
       {
         type: "list",
         name: "categoryChoice",
@@ -84,18 +88,83 @@ async function createTil(title) {
           return "Please use only lowercase letters, numbers, and hyphens";
         },
       },
+    ]);
+
+    const category =
+      categoryAnswer.categoryChoice === "NEW"
+        ? categoryAnswer.newCategory
+        : categoryAnswer.categoryChoice;
+
+    // Now check if file exists in this specific category
+    const filepath = path.join(
+      process.cwd(),
+      "src",
+      "content",
+      "til",
+      category,
+      filename
+    );
+
+    if (fs.existsSync(filepath)) {
+      console.log(
+        chalk.yellow(
+          `\nA file named '${filename}' already exists in category '${category}'`
+        )
+      );
+      console.log(chalk.yellow(`Full path: ${filepath}`));
+
+      const { action } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "action",
+          message: "How would you like to proceed?",
+          choices: [
+            { name: "Rename (create new file)", value: "rename" },
+            { name: "Overwrite existing file", value: "overwrite" },
+            { name: "Cancel", value: "cancel" },
+          ],
+        },
+      ]);
+
+      if (action === "cancel") {
+        console.log(chalk.blue("Operation cancelled."));
+        process.exit(0);
+      }
+
+      if (action === "rename") {
+        const { newTitle } = await inquirer.prompt([
+          {
+            type: "input",
+            name: "newTitle",
+            message: "Enter a new title:",
+            validate: (input) =>
+              input.trim().length > 0 || "Title cannot be empty",
+          },
+        ]);
+
+        return createTil(newTitle); // Start over with new title
+      }
+    }
+
+    // Continue with the rest of the questions
+    const questions = [
+      {
+        type: "input",
+        name: "summary",
+        message: "Enter a brief summary (or press Enter to skip):",
+      },
       {
         type: "confirm",
         name: "wantExistingTags",
         message: "Would you like to select from existing tags?",
         default: true,
-        when: () => availableTags.length > 0, // Changed variable name here
+        when: () => availableTags.length > 0,
       },
       {
         type: "checkbox",
-        name: "selectedTags", // Changed from 'existingTags' to 'selectedTags'
+        name: "selectedTags",
         message: "Select existing tags (space to select, enter when done):",
-        choices: availableTags, // Changed variable name here
+        choices: availableTags,
         when: (answers) => answers.wantExistingTags,
       },
       {
@@ -119,33 +188,21 @@ async function createTil(title) {
 
     const answers = await inquirer.prompt(questions);
 
-    // Process the category
-    const category =
-      answers.categoryChoice === "NEW"
-        ? answers.newCategory
-        : answers.categoryChoice;
-
     // Process tags (combine selected and custom tags)
-    const selectedTags = answers.selectedTags || []; // Changed variable name here
+    const selectedTags = answers.selectedTags || [];
     const customTags = answers.customTags || [];
     const finalTags = [...selectedTags, ...customTags];
 
-    // Create slug from title
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
     // Create content
     const content = `---
-title: "${title}"
+title: "${initialTitle}"
 summary: "${answers.summary}"
 tags: [${finalTags.map((tag) => `"${tag}"`).join(", ")}]
 date: "${new Date().toISOString().split("T")[0]}"
 category: "${category}"
 ---
 
-# ${title}
+# ${initialTitle}
 
 `;
 
@@ -172,7 +229,6 @@ category: "${category}"
     fs.mkdirSync(directory, { recursive: true });
 
     // Create the file
-    const filepath = path.join(directory, `${slug}.md`);
     fs.writeFileSync(filepath, content);
 
     console.log(chalk.green(`\nCreated new TIL at: ${filepath}`));

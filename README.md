@@ -51,7 +51,9 @@ The project includes a CLI tool for creating new TIL entries:
 node scripts/create-til.js "Your TIL Title"
 ```
 
-This will create a new markdown file in `src/content/til/[category]` with the correct frontmatter.
+This will launch a command line interface that will walk you through the basic creation of a new TIL markdown file. It incorporates some validation
+
+create a new markdown file in `src/content/til/[category]` with the correct frontmatter.
 
 ### Manual Creation
 
