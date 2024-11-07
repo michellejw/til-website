@@ -2,8 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { ChevronDown, ChevronRight, FolderOpen, Search } from "lucide-react";
+import { ChevronRight, FolderOpen, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -36,9 +43,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   const categories = ["all", ...new Set(posts.map((post) => post.category))];
   const allTags = Array.from(new Set(posts.flatMap((post) => post.tags)));
@@ -56,9 +61,82 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
     return matchesCategory && matchesTag && matchesSearch;
   });
 
-  const toggleCard = (slug: string) => {
-    setExpandedId(expandedId === slug ? null : slug);
-  };
+  const TagButton: React.FC<{
+    tag: string;
+    onClick: (e: React.MouseEvent) => void;
+  }> = ({ tag, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`px-2 py-1 rounded-full text-sm transition-colors
+        ${
+          selectedTag === tag
+            ? "bg-green-600 text-white"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+        }`}
+    >
+      #{tag}
+    </button>
+  );
+
+  const PostContent: React.FC<{ post: TilPost }> = ({ post }) => (
+    <div className="prose max-w-none dark:prose-invert">
+      <div className="mb-4 flex gap-2 flex-wrap">
+        {post.tags.map((tag) => (
+          <TagButton
+            key={tag}
+            tag={tag}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedTag(selectedTag === tag ? null : tag);
+            }}
+          />
+        ))}
+      </div>
+      <div className="mt-4">
+        <ReactMarkdown
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code({ className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || "");
+              const isInline = !match;
+              return isInline ? (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              ) : (
+                <SyntaxHighlighter
+                  style={oneDark}
+                  language={match[1]}
+                  PreTag="div"
+                  className="rounded-md"
+                >
+                  {String(children).replace(/\n$/, "")}
+                </SyntaxHighlighter>
+              );
+            },
+            img: ({ src, alt, ...props }) => {
+              if (!src) return null;
+              const [altText, width] = (alt || "").split("|");
+              const imageWidth = width ? parseInt(width) : 400;
+              const imageHeight = Math.round(imageWidth * (2 / 3));
+
+              return (
+                <Image
+                  src={src.startsWith("/") ? src : `/${src}`}
+                  alt={altText || "Article image"}
+                  width={imageWidth}
+                  height={imageHeight}
+                  className="mx-auto rounded-lg"
+                />
+              );
+            },
+          }}
+        >
+          {post.content}
+        </ReactMarkdown>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -82,7 +160,6 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              suppressHydrationWarning
             />
           </div>
 
@@ -108,150 +185,71 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
 
           <div className="flex gap-2 flex-wrap mb-6">
             {allTags.map((tag) => (
-              <button
+              <TagButton
                 key={tag}
+                tag={tag}
                 onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                className={`px-3 py-1 rounded-full text-sm transition-colors
-                  ${
-                    selectedTag === tag
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-              >
-                #{tag}
-              </button>
+              />
             ))}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
-            <Card
-              key={post.slug}
-              className={`cursor-pointer transition-all duration-300 hover:shadow-lg
-                ${expandedId === post.slug ? "md:col-span-2 lg:col-span-3" : ""}`}
-              onClick={() => toggleCard(post.slug)}
-            >
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span>{post.title}</span>
-                    {expandedId === post.slug ? (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
-                    ) : (
+            <React.Fragment key={post.slug}>
+              <Card
+                className="cursor-pointer transition-all duration-300 hover:shadow-lg"
+                onClick={() => setExpandedId(post.slug)}
+              >
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span>{post.title}</span>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
-                    )}
-                  </div>
-                  <span
-                    className="text-sm text-gray-400"
-                    suppressHydrationWarning
-                  >
-                    {format(new Date(post.date + "T12:00:00"), "MMM d, yyyy")}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {expandedId === post.slug ? (
-                  <div className="prose max-w-none">
-                    <div className="mb-4 flex gap-2 flex-wrap">
-                      {post.tags.map((tag) => (
-                        <button
-                          key={tag}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTag(selectedTag === tag ? null : tag);
-                          }}
-                          className={`px-2 py-1 rounded-full text-sm transition-colors
-                            ${
-                              selectedTag === tag
-                                ? "bg-green-600 text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                        >
-                          #{tag}
-                        </button>
-                      ))}
                     </div>
-                    <div className="mt-4">
-                      <ReactMarkdown
-                        rehypePlugins={[rehypeRaw]} // Add this line
-                        components={{
-                          code({ className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(
-                              className || ""
-                            );
-                            const isInline = !match;
-                            return isInline ? (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            ) : (
-                              <SyntaxHighlighter
-                                style={oneDark}
-                                language={match[1]}
-                                PreTag="div"
-                                className="rounded-md"
-                              >
-                                {String(children).replace(/\n$/, "")}
-                              </SyntaxHighlighter>
-                            );
-                          },
-                          // img handler
-                          img: ({ src, alt }) => {
-                            if (!src) return null;
-
-                            // Parse size from alt text if it includes a size marker
-                            const [altText, width] = (alt || "").split("|");
-
-                            // Convert width to number if it exists, or use default
-                            const imageWidth = width ? parseInt(width) : 400;
-                            // Calculate height proportionally (using 3:2 aspect ratio as example)
-                            const imageHeight = Math.round(
-                              imageWidth * (2 / 3)
-                            );
-
-                            return (
-                              <Image
-                                src={src.startsWith("/") ? src : `/${src}`}
-                                alt={altText || "Article image"}
-                                width={imageWidth}
-                                height={imageHeight}
-                                className="mx-auto rounded-lg"
-                              />
-                            );
-                          },
-                        }}
-                      >
-                        {post.content}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                ) : (
+                    <span className="text-sm text-gray-400">
+                      {format(new Date(post.date + "T12:00:00"), "MMM d, yyyy")}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
                   <div>
                     <p className="text-gray-600 mb-4">{post.summary}</p>
                     <div className="flex gap-2 flex-wrap">
                       {post.tags.map((tag) => (
-                        <button
+                        <TagButton
                           key={tag}
+                          tag={tag}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedTag(selectedTag === tag ? null : tag);
                           }}
-                          className={`px-2 py-1 rounded-full text-sm transition-colors
-                            ${
-                              selectedTag === tag
-                                ? "bg-green-600 text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                        >
-                          #{tag}
-                        </button>
+                        />
                       ))}
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Dialog
+                open={expandedId === post.slug}
+                onOpenChange={(open) => {
+                  if (!open) setExpandedId(null);
+                }}
+              >
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold">
+                      {post.title}
+                    </DialogTitle>
+                    <div className="text-sm text-gray-500">
+                      {format(new Date(post.date + "T12:00:00"), "MMM d, yyyy")}
+                    </div>
+                  </DialogHeader>
+                  <PostContent post={post} />
+                </DialogContent>
+              </Dialog>
+            </React.Fragment>
           ))}
         </div>
       </div>

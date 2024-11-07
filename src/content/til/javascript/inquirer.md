@@ -6,5 +6,4 @@ date: "2024-11-07"
 category: "javascript"
 ---
 
-# Inquirer
-
+This is a great tool for providing a command-line interface for users. For example, this tool is used to automatically generate template TIL markdown files, create the required headers, and place the new files into the appropriate folder.
