@@ -1,16 +1,17 @@
 #!/usr/bin/env node
-
+import { MarkdownValidator } from "./validator.js";
 import inquirer from "inquirer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { exec } from "child_process";
+import chalk from "chalk";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Helper to get existing categories
+// Helper functions remain the same
 function getExistingCategories() {
   const tilPath = path.join(process.cwd(), "src", "content", "til");
   try {
@@ -22,7 +23,6 @@ function getExistingCategories() {
   }
 }
 
-// Helper to get existing tags from all markdown files
 async function getExistingTags() {
   const tilPath = path.join(process.cwd(), "src", "content", "til");
   const tagSet = new Set();
@@ -55,9 +55,8 @@ async function getExistingTags() {
 
 async function createTil(title) {
   try {
-    // Get existing categories and tags for suggestions
     const existingCategories = getExistingCategories();
-    const existingTags = await getExistingTags();
+    const availableTags = await getExistingTags(); // Changed variable name here
 
     const questions = [
       {
@@ -85,30 +84,25 @@ async function createTil(title) {
           return "Please use only lowercase letters, numbers, and hyphens";
         },
       },
-      // First ask if they want to select from existing tags
       {
         type: "confirm",
         name: "wantExistingTags",
         message: "Would you like to select from existing tags?",
         default: true,
-        when: () => existingTags.length > 0, // Only ask if there are existing tags
+        when: () => availableTags.length > 0, // Changed variable name here
       },
-      // Then show tag selection if they said yes
       {
         type: "checkbox",
-        name: "tags",
+        name: "selectedTags", // Changed from 'existingTags' to 'selectedTags'
         message: "Select existing tags (space to select, enter when done):",
-        choices: existingTags,
+        choices: availableTags, // Changed variable name here
         when: (answers) => answers.wantExistingTags,
       },
-      // Then ask about custom tags
       {
         type: "confirm",
         name: "wantCustomTags",
         message: "Would you like to add custom tags?",
         default: true,
-        when: (answers) =>
-          !answers.wantExistingTags || answers.tags?.length === 0,
       },
       {
         type: "input",
@@ -132,16 +126,9 @@ async function createTil(title) {
         : answers.categoryChoice;
 
     // Process tags (combine selected and custom tags)
-    let finalTags = [...answers.tags];
-    if (answers.customTags) {
-      finalTags = [...finalTags, ...answers.customTags];
-    }
-
-    // // Process tags (combine selected and custom tags)
-    // let finalTags = answers.tags.filter((tag) => tag !== "CUSTOM");
-    // if (answers.customTags) {
-    //   finalTags = [...finalTags, ...answers.customTags];
-    // }
+    const selectedTags = answers.selectedTags || []; // Changed variable name here
+    const customTags = answers.customTags || [];
+    const finalTags = [...selectedTags, ...customTags];
 
     // Create slug from title
     const slug = title
@@ -156,12 +143,23 @@ summary: "${answers.summary}"
 tags: [${finalTags.map((tag) => `"${tag}"`).join(", ")}]
 date: "${new Date().toISOString().split("T")[0]}"
 category: "${category}"
-
 ---
 
 # ${title}
 
 `;
+
+    // Validate content before saving
+    const validator = new MarkdownValidator();
+    const errors = await validator.validateFrontMatter(content, true);
+
+    if (errors.length > 0) {
+      const hasErrors = errors.some((e) => e.level === "error");
+      if (hasErrors) {
+        console.log(chalk.red("\nCannot create TIL due to validation errors."));
+        process.exit(1);
+      }
+    }
 
     // Ensure category directory exists
     const directory = path.join(
@@ -177,7 +175,7 @@ category: "${category}"
     const filepath = path.join(directory, `${slug}.md`);
     fs.writeFileSync(filepath, content);
 
-    console.log(`\nCreated new TIL at: ${filepath}`);
+    console.log(chalk.green(`\nCreated new TIL at: ${filepath}`));
 
     // Try to open the file in the default editor
     try {
@@ -193,14 +191,14 @@ category: "${category}"
       console.log("Could not open file automatically");
     }
   } catch (error) {
-    console.error("Error creating TIL:", error);
+    console.error(chalk.red("Error creating TIL:", error));
   }
 }
 
 // Check if title was provided as argument
 const title = process.argv[2];
 if (!title) {
-  console.error("Please provide a title as an argument.");
+  console.error(chalk.red("Please provide a title as an argument."));
   console.log('Usage: npm run til "Your TIL Title"');
   process.exit(1);
 }

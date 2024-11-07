@@ -46,7 +46,7 @@ The site should run at `http://localhost:3000`
 The project includes a CLI tool for creating new TIL entries:
 
 ```bash
-node scripts/create-til.js "Your TIL Title" "Brief summary" "category" -t tag1 tag2 tag3
+node scripts/create-til.js "Your TIL Title"
 ```
 
 This will create a new markdown file in `src/content/til/[category]` with the correct frontmatter.
