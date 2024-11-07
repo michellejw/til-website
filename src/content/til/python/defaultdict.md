@@ -6,8 +6,6 @@ date: "2024-11-04"
 category: "python"
 ---
 
-# Python defaultdict
-
 Let's say you're creating a dictionary on the fly, but you don't know all the keys ahead of time. With defaultdict, if you want to update the dict with a key that doesn't yet exist, it will just handle it in the background.
 
 ```python
