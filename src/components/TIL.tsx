@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -38,6 +38,31 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const categories = useMemo(
+    () => ["all", ...new Set(posts.map((post) => post.category))],
+    [posts]
+  );
+
+  const allTags = useMemo(
+    () => Array.from(new Set(posts.flatMap((post) => post.tags))),
+    [posts]
+  );
+
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => {
+      const matchesCategory =
+        selectedCategory === "all" || post.category === selectedCategory;
+      const matchesTag = !selectedTag || post.tags.includes(selectedTag);
+      const matchesSearch =
+        !searchQuery ||
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.content.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesCategory && matchesTag && matchesSearch;
+    });
+  }, [posts, selectedCategory, selectedTag, searchQuery]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -64,25 +89,9 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [expandedId, initialPosts, selectedCategory, selectedTag, searchQuery]);
+  }, [expandedId, filteredPosts]);
 
   if (!mounted) return null;
-
-  const categories = ["all", ...new Set(posts.map((post) => post.category))];
-  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags)));
-
-  const filteredPosts = posts.filter((post) => {
-    const matchesCategory =
-      selectedCategory === "all" || post.category === selectedCategory;
-    const matchesTag = !selectedTag || post.tags.includes(selectedTag);
-    const matchesSearch =
-      !searchQuery ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesCategory && matchesTag && matchesSearch;
-  });
 
   const navigatePost = (direction: "next" | "prev") => {
     const currentIndex = filteredPosts.findIndex(
