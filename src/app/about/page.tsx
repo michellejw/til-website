@@ -16,7 +16,7 @@ const AboutPage = () => {
             <CardContent className="prose">
               <p className="text-gray-600">
                 This is a collection of quick notes, code snippets, libraries,
-                or just things I've come across along the way.
+                or just things I&apos;ve come across along the way.
               </p>
 
               <h3 className="text-lg font-semibold mt-6 mb-2">Why TILs?</h3>
