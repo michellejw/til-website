@@ -6,6 +6,10 @@ date: "2024-11-06"
 category: "javascript"
 ---
 
-I am a Python programmer most of the time and was really pleased to see something akin to the "Black" package for web dev type languages (e.g., html, css, javascript, markdown, yaml). It's just a nice automatic formatter. I find javascript/typscript files tend to get messy really quickly. I don't know why, maybe it's because they have lots of nested things? In any case, this tool is like magic. There are plugins for most IDEs, including VS Code, and you can set it up to run on save or you can make git commit hooks. It is pretty fantastic. 100% recommend.
+I like nice-looking code, but I am not great at writing it that way. So I love a tool that can auto-format for me. I'm primarily a Python programmer, and the analagous package there I'd say would be Black. Prettier is like Black but is made for web languages like css, html, javascript, etc. 
+
+Any time I write in javascript it looks terrible. I don't know why. Maybe all the nested things??
+
+There's an extension in VS Code (and probably lots of other IDEs) where you can set it up to format on save. 
 
 Learn more here: [https://prettier.io](https://prettier.io/)

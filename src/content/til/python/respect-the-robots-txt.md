@@ -6,8 +6,7 @@ date: "2024-11-11"
 category: "web"
 ---
 
-
-When scraping websites, it's important to check and respect the site's `robots.txt` file. This file contains a set of rules that tell web crawlers which parts of the site they can and can't access. 
+I'm very new to the world of web scraping, and was very excited to learn that the little python module I wrote to scrape some OOI info pages is *technically* a bot. A bot! So I'm basically a hacker now. Anyway I learned that when you send a bot out there into the world to gather up information for you, it's good to make sure you check the terms of service for the website you're accessing. The "bot" version of the terms of service is stored in a file called `robots.txt`, which contains a set of rules that tell web crawlers which parts of the site they can and can't access. 
 
 Here's what a typical robots.txt might look like:
 
@@ -60,7 +59,7 @@ if __name__ == "__main__":
             print(f"❌ Not allowed to crawl: {url}")
 ```
 
-### Tips for being a *nice* bot
+### Tips for building a *nice* bot
 
 1. Identify your bot with a user agent
 2. Respect rate limits and crawl delays
