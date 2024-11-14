@@ -128,7 +128,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
   );
 
   const PostContent: React.FC<{ post: TilPost }> = ({ post }) => (
-    <div className="prose max-w-none dark:prose-invert">
+    <div className="prose max-w-none dark:prose-invert overflow-hidden">
       <div className="mb-4 flex gap-2 flex-wrap">
         {post.tags.map((tag) => (
           <TagButton
@@ -153,14 +153,21 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
                   {children}
                 </code>
               ) : (
-                <SyntaxHighlighter
-                  style={oneDark}
-                  language={match[1]}
-                  PreTag="div"
-                  className="rounded-md"
-                >
-                  {String(children).replace(/\n$/, "")}
-                </SyntaxHighlighter>
+                <div className="overflow-x-auto">
+                  <SyntaxHighlighter
+                    style={oneDark}
+                    language={match[1]}
+                    PreTag="div"
+                    className="rounded-md"
+                    customStyle={{
+                      margin: 0,
+                      width: "100%",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    {String(children).replace(/\n$/, "")}
+                  </SyntaxHighlighter>
+                </div>
               );
             },
             img: ({ src, alt }) => {

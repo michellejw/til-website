@@ -1,7 +1,7 @@
 ---
 title: "Inquirer.js for Interactive CLIs"
 summary: "Create user-friendly command line prompts without the hassle"
-tags: ["javascript", "cli", "npm", "tools"]
+tags: ["cli", "npm", "tools"]
 date: "2024-11-07"
 category: "javascript"
 ---
