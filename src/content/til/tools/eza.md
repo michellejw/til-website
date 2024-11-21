@@ -8,6 +8,8 @@ category: "tools"
 
 eza is like the `ls` command (which is of course a staple of any unix-like system) but with a bunch of great features - and colors! It's got hyperlinks, sorting, icons, git statuses, and (my current fave) the ability to show the directory tree.
 
+Learn more here: [eza site](https://eza.rocks/)
+
 ## Install
 - macOS: `brew install eza`
 - Other OSs: see [installation instructions](https://github.com/eza-community/eza/blob/main/INSTALL.md)
