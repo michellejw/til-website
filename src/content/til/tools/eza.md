@@ -10,7 +10,7 @@ eza is like the `ls` command (which is of course a staple of any unix-like syste
 
 ## Install
 - macOS: `brew install eza`
-- Windows: Use `scoop install eza` or download from the [releases page](https://github.com/oconnor663/eza/releases).
+- Other OSs: see [installation instructions](https://github.com/eza-community/eza/blob/main/INSTALL.md)
 
 ## Usage
 ```bash
