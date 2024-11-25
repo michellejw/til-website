@@ -37,6 +37,7 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isTagsVisible, setIsTagsVisible] = useState(false);
 
   const categories = useMemo(
     () => ["all", ...new Set(posts.map((post) => post.category))],
@@ -239,14 +240,24 @@ const TIL: React.FC<TILProps> = ({ initialPosts }) => {
             ))}
           </div>
 
-          <div className="flex gap-2 flex-wrap mb-6">
-            {allTags.map((tag) => (
-              <TagButton
-                key={tag}
-                tag={tag}
-                onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-              />
-            ))}
+          <div className="mb-6">
+            <button
+              onClick={() => setIsTagsVisible(!isTagsVisible)}
+              className="bg-gray-200 text-gray-700 py-1 px-3 rounded-md text-sm transition-colors hover:bg-gray-300"
+            >
+              {isTagsVisible ? "Hide Tags" : "Show Tags"}
+            </button>
+            {isTagsVisible && (
+              <div className="flex gap-2 flex-wrap mb-6">
+                {allTags.map((tag) => (
+                  <TagButton
+                    key={tag}
+                    tag={tag}
+                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
