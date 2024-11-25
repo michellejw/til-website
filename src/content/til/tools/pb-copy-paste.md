@@ -1,5 +1,5 @@
 ---
-title: "pb-copy-paste"
+title: "pbcopy and pbpaste"
 summary: "Mac terminal copy-pasta"
 tags: ["cli", "neat-stuff", "terminal"]
 date: "2024-11-25"
